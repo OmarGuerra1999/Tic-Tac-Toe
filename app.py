@@ -374,32 +374,24 @@ EVALUACIONES_JSON_FILE = 'evaluaciones.json' # Define el nombre del archivo JSON
 def guardar_evaluacion_en_json(evaluacion_data):
     """Guarda una evaluación individual en un archivo JSON."""
     evaluaciones = []
-    # Carga las evaluaciones existentes si el archivo ya existe
     if os.path.exists(EVALUACIONES_JSON_FILE):
         try:
             with open(EVALUACIONES_JSON_FILE, 'r', encoding='utf-8') as f:
-                # Lee todo el contenido del archivo y lo carga como JSON
                 contenido = f.read()
-                if contenido: # Verifica que el contenido no esté vacío
+                if contenido:
                     evaluaciones = json.loads(contenido)
                 else:
-                    # Si el archivo está vacío, inicializa una lista vacía
                     evaluaciones = []
             print(f"DEBUG: Archivo {EVALUACIONES_JSON_FILE} cargado exitosamente para añadir nueva evaluación.")
         except json.JSONDecodeError as e:
-            # Si el archivo está corrupto, lo inicializamos como una lista vacía
             evaluaciones = []
             print(f"Advertencia: El archivo {EVALUACIONES_JSON_FILE} estaba corrupto o vacío. Reiniciando contenido para guardar: {e}")
         except Exception as e:
-            # Captura cualquier otra excepción durante la lectura del archivo
             print(f"Error inesperado al cargar {EVALUACIONES_JSON_FILE} para guardar: {e}")
-            evaluaciones = [] # Asegura que evaluaciones sea una lista vacía para continuar
+            evaluaciones = []
 
-
-    # Añade la nueva evaluación
     evaluaciones.append(evaluacion_data)
 
-    # Guarda todas las evaluaciones de nuevo en el archivo
     try:
         with open(EVALUACIONES_JSON_FILE, 'w', encoding='utf-8') as f:
             json.dump(evaluaciones, f, indent=4, ensure_ascii=False)
@@ -420,17 +412,23 @@ def guardar_jugadas_en_archivo(jugadas):
         json.dump(jugadas, f, indent=2)
 
 def cargar_evaluaciones_desde_archivo():
-    # Lee archivo de evaluaciones JSON donde cada línea es un JSON independiente
-    evaluaciones = []
-    try:
-        with open("evaluaciones.json", "r", encoding="utf-8") as f:
-            for linea in f:
-                ev = json.loads(linea)  # Convierte línea JSON a diccionario
-                print(type(ev))  # Debug: imprime tipo de objeto (debe ser dict)
-                evaluaciones.append(ev)
-    except FileNotFoundError:
-        pass  # Si archivo no existe, simplemente retorna lista vacía
-    return evaluaciones
+    """Carga todas las evaluaciones desde el archivo JSON."""
+    if os.path.exists(EVALUACIONES_JSON_FILE):
+        try:
+            with open(EVALUACIONES_JSON_FILE, 'r', encoding='utf-8') as f:
+                # Lee TODO el contenido del archivo como una única cadena
+                contenido = f.read()
+                if contenido: # Verifica que el contenido no esté vacío
+                    return json.loads(contenido) # PARSEA LA CADENA COMPLETA COMO JSON
+                else:
+                    return [] # Si el archivo está vacío, devuelve una lista vacía
+        except json.JSONDecodeError as e:
+            print(f"Error: El archivo {EVALUACIONES_JSON_FILE} no es un JSON válido: {e}")
+            return [] # Devuelve una lista vacía en caso de error de formato
+        except Exception as e:
+            print(f"Error inesperado al cargar {EVALUACIONES_JSON_FILE}: {e}")
+            return []
+    return []
 
 def guardar_evaluacion_en_archivo(evaluacion):
     # Carga evaluaciones previas, añade una nueva y guarda todas en archivo JSON
