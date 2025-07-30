@@ -91,10 +91,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///evaluaciones.db'  # Define la
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # Desactiva seguimiento de cambios para mejorar rendimiento
 db.init_app(app)  # Inicializa la base de datos con la app Flask
 
-# Crear todas las tablas definidas en modelos si no existen aún
-with app.app_context():
-    db.create_all()
-
 # --- Modelo de datos SQLAlchemy para evaluaciones ---
 class Evaluacion(db.Model):
     __tablename__ = 'evaluaciones' # <--- ¡IMPORTANTE! Define el nombre de la tabla explícitamente
@@ -121,6 +117,9 @@ class Evaluacion(db.Model):
 
     # No necesitamos FOREIGN KEY aquí si db_handler.py ya la maneja o si Jugada no es un modelo SQLAlchemy
     # Si Jugada también se convierte en un modelo SQLAlchemy, entonces sí se puede definir aquí.
+# Crear todas las tablas definidas en modelos si no existen aún
+with app.app_context():
+    db.create_all()
 
 # --- Rúbrica de evaluación automática: debe coincidir con la del frontend JS ---
 # --- Clave secreta para gestionar sesiones de usuario ---
