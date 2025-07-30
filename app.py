@@ -76,6 +76,15 @@ from flask_sqlalchemy import SQLAlchemy  # ORM para manejar base de datos desde 
 
 # --- Inicialización de Flask y configuración de base de datos ---
 db = SQLAlchemy()  # Crea instancia de SQLAlchemy para manejar base de datos
+DIMENSIONES_PARA_EVALUACION = [
+    "Comprensión de Reglas",
+    "Validez y Legalidad",
+    "Razonamiento Estratégico",
+    "Factualidad",
+    "Coherencia Explicativa",
+    "Claridad Lingüística",
+    "Adaptabilidad"
+]
 app = Flask(__name__)  # Crea instancia de la aplicación Flask
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///evaluaciones.db'  # Define la ruta y tipo de base de datos SQLite
@@ -114,16 +123,6 @@ class Evaluacion(db.Model):
     # Si Jugada también se convierte en un modelo SQLAlchemy, entonces sí se puede definir aquí.
 
 # --- Rúbrica de evaluación automática: debe coincidir con la del frontend JS ---
-DIMENSIONES = [
-    "Comprensión de Reglas",
-    "Validez y Legalidad",
-    "Razonamiento Estratégico",
-    "Factualidad",
-    "Coherencia Explicativa",
-    "Claridad Lingüística",
-    "Adaptabilidad"
-]  # Lista de dimensiones utilizadas para evaluar automáticamente las jugadas
-
 # --- Clave secreta para gestionar sesiones de usuario ---
 app.secret_key = os.urandom(24)  # Genera una clave secreta aleatoria para proteger sesiones en Flask
 
