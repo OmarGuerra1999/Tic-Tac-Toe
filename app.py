@@ -365,7 +365,32 @@ def evaluar_jugada_rubrica(jugada):
         "Claridad Lingüística": 3 if len(razon) > 15 else 2,
         "Adaptabilidad": 3 if "respuesta" in razon or "ajusté" in razon else 2
     }  # Retorna diccionario con puntajes para cada dimensión
+#######################################################################################################################
+import json
+import os # Necesario para verificar si el archivo existe
 
+EVALUACIONES_JSON_FILE = 'evaluaciones.json' # Define el nombre del archivo JSON
+
+def guardar_evaluacion_en_json(evaluacion_data):
+    """Guarda una evaluación individual en un archivo JSON."""
+    evaluaciones = []
+    # Carga las evaluaciones existentes si el archivo ya existe
+    if os.path.exists(EVALUACIONES_JSON_FILE):
+        try:
+            with open(EVALUACIONES_JSON_FILE, 'r', encoding='utf-8') as f:
+                evaluaciones = json.load(f)
+        except json.JSONDecodeError:
+            # Si el archivo está vacío o corrupto, lo inicializamos como una lista vacía
+            evaluaciones = []
+            print(f"Advertencia: El archivo {EVALUACIONES_JSON_FILE} estaba corrupto o vacío. Reiniciando contenido.")
+
+    # Añade la nueva evaluación
+    evaluaciones.append(evaluacion_data)
+
+    # Guarda todas las evaluaciones de nuevo en el archivo
+    with open(EVALUACIONES_JSON_FILE, 'w', encoding='utf-8') as f:
+        json.dump(evaluaciones, f, indent=4, ensure_ascii=False)
+#######################################################################################################################
 def cargar_jugadas_desde_archivo():
     # Carga lista de jugadas desde archivo JSON si existe, retorna lista vacía si no
     if os.path.exists("jugadas.json"):
@@ -642,6 +667,17 @@ def evaluar():
                 modelo=jugada_actual['modelo'],
                 dimensiones_eval=DIMENSIONES_PARA_EVALUACION
             )
+            json_data = {
+                "match_id": jugada_actual['match_id'],
+                "movimiento": jugada_actual['movimiento'],
+                "jugador": jugada_actual['jugador'],
+                "modelo": jugada_actual['modelo'],
+                "evaluacion_rubrica": rubrica,
+                "razon": razon,
+                "fecha_evaluacion": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            }
+            guardar_evaluacion_en_json(json_data)
+            flash("Evaluación guardada con éxito en BD y JSON!", "success")
         except Exception as e:
             print(f"Error guardando evaluación en BD: {e}")
 
@@ -832,6 +868,17 @@ def guardar_evaluacion():
                 modelo=jugada_actual['modelo'],
                 dimensiones_eval=DIMENSIONES_PARA_EVALUACION
             )
+            json_data = {
+                "match_id": jugada_actual['match_id'],
+                "movimiento": jugada_actual['movimiento'],
+                "jugador": jugada_actual['jugador'],
+                "modelo": jugada_actual['modelo'],
+                "evaluacion_rubrica": rubrica,
+                "razon": razon,
+                "fecha_evaluacion": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            }
+            guardar_evaluacion_en_json(json_data)
+            flash("Evaluación guardada con éxito en BD y JSON!", "success")
         except Exception as e:
             print(f"Error guardando evaluación en BD: {e}")
 
