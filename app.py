@@ -389,6 +389,13 @@ def cargar_evaluaciones_desde_archivo():
             print(f"Error inesperado al cargar {EVALUACIONES_JSON_FILE}: {e}")
             return []
     return [] # Si el archivo no existe, devuelve una lista vacía
+    
+    # Añade la nueva evaluación
+    evaluaciones.append(evaluacion_data)
+
+    # Guarda todas las evaluaciones de nuevo en el archivo
+    with open(EVALUACIONES_JSON_FILE, 'w', encoding='utf-8') as f:
+        json.dump(evaluaciones, f, indent=4, ensure_ascii=False)
 #######################################################################################################################
 def cargar_jugadas_desde_archivo():
     # Carga lista de jugadas desde archivo JSON si existe, retorna lista vacía si no
