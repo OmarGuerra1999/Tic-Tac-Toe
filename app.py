@@ -371,25 +371,24 @@ import os # Necesario para verificar si el archivo existe
 
 EVALUACIONES_JSON_FILE = 'evaluaciones.json' # Define el nombre del archivo JSON
 
-def guardar_evaluacion_en_json(evaluacion_data):
-    """Guarda una evaluación individual en un archivo JSON."""
-    evaluaciones = []
-    # Carga las evaluaciones existentes si el archivo ya existe
+def cargar_evaluaciones_desde_archivo():
+    """Carga todas las evaluaciones desde el archivo JSON."""
     if os.path.exists(EVALUACIONES_JSON_FILE):
         try:
             with open(EVALUACIONES_JSON_FILE, 'r', encoding='utf-8') as f:
-                evaluaciones = json.load(f)
-        except json.JSONDecodeError:
-            # Si el archivo está vacío o corrupto, lo inicializamos como una lista vacía
-            evaluaciones = []
-            print(f"Advertencia: El archivo {EVALUACIONES_JSON_FILE} estaba corrupto o vacío. Reiniciando contenido.")
-
-    # Añade la nueva evaluación
-    evaluaciones.append(evaluacion_data)
-
-    # Guarda todas las evaluaciones de nuevo en el archivo
-    with open(EVALUACIONES_JSON_FILE, 'w', encoding='utf-8') as f:
-        json.dump(evaluaciones, f, indent=4, ensure_ascii=False)
+                # Lee todo el contenido del archivo como una única cadena
+                contenido = f.read()
+                if contenido: # Verifica que el contenido no esté vacío
+                    return json.loads(contenido) # <--- ¡ESTE ES EL CAMBIO CLAVE! Parsea la cadena completa
+                else:
+                    return [] # Si el archivo está vacío, devuelve una lista vacía
+        except json.JSONDecodeError as e:
+            print(f"Error: El archivo {EVALUACIONES_JSON_FILE} no es un JSON válido: {e}")
+            return [] # Devuelve una lista vacía en caso de error de formato
+        except Exception as e:
+            print(f"Error inesperado al cargar {EVALUACIONES_JSON_FILE}: {e}")
+            return []
+    return [] # Si el archivo no existe, devuelve una lista vacía
 #######################################################################################################################
 def cargar_jugadas_desde_archivo():
     # Carga lista de jugadas desde archivo JSON si existe, retorna lista vacía si no
